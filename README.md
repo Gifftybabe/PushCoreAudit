@@ -7,6 +7,9 @@ The PUSH Protocol smart contract system (PushCoreV2) is a notification and chann
 
 |--------------|------------|
 
+
+|--------------|------------|
+
 | Project Name | PUSH Protocol |
 | Contract Name | PushCoreV2 |
 | Solidity Version | ^0.6.0 |
