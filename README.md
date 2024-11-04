@@ -22,10 +22,11 @@ The PUSH Protocol smart contract system (PushCoreV2) is a notification and chann
 ## 📋 Table of Contents
 1. [Basic Contract Information](#basic-contract-information)
 2. [What Does This Contract Do?](#what-does-this-contract-do)
-3. [Important Functions](#important-functions)
-4. [Security Checklist](#security-checklist)
-5. [Common Issues Found](#common-issues-found)
-6. [Recommendations](#recommendations)
+3. [Key Components](#key-components)
+4. [Important Functions](#important-functions)
+5. [Security Checklist](#security-checklist)
+6. [Common Issues Found](#common-issues-found)
+7. [Recommendations](#recommendations)
 
 
 ## Basic Contract Information
@@ -39,7 +40,7 @@ This review covers:
 - Core functionalities
 - Security measures and potential vulnerabilities
 
-
+---
 
 ## What Does This Contract Do?
 
@@ -86,6 +87,8 @@ struct UserFessInfo {    // Note: There's a typo in 'Fees'
 - Rewards are calculated based on epochs (time periods)
 - Each epoch is about 20 days long
 
+  
+
 ### Detailed Analysis
 
 #### Architecture
@@ -112,10 +115,11 @@ This contract applies several security practices:
 - **Access Control Checks**: Ensures only permitted addresses can execute administrative functions.
 - **Reentrancy Guards**: Prevents potential reentrancy attacks in notification or subscription processes.
 - **Input Validation**: Ensures user inputs are validated before state changes.
+  
 
 ---
 
-### Key Components
+## Key Components
 
 #### 1. Imports and Dependencies
 ```solidity
@@ -270,7 +274,7 @@ function subscribe() external {
 - The error message could be more informative. Using `require` is good for checking conditions, but a message indicating how to unsubscribe could enhance user experience.
 
   
-## 5. Send Notification
+### 5. Send Notification
 ```solidity
 function sendNotification(address recipient, string memory message) external onlyOwner {
     // Implementation of sending notification
@@ -295,8 +299,27 @@ function sendNotification(address recipient, string memory message) external onl
 - There should be validation for the `recipient` address to ensure it is not the zero address. This could prevent sending notifications to invalid recipients.
 
 
+---
+
+## 🚨 Security Checklist 
+
+### 1. Access Control Issues
+
+| Function           | Who Can Call    | Risk Level      |
+|--------------------------|--------------|--------------|
+| `createChannelWithPUSH `       | `Anyone`   | `Low`     |
+| `stake `       | `Anyone`   | `Low`     |
+| `blockChannel `       | `Only Admin`   | `High`     |
+| `pauseContract `       | `Only Admin `   | `High`     |
 
 
+
+| Function | Who Can Call | Risk Level |
+|----------|-------------|------------|
+| createChannelWithPUSH | Anyone | Low |
+| stake | Anyone | Low |
+| blockChannel | Only Admin | High |
+| pauseContract | Only Admin | High |
 
 ### 2. Money Flow Checks
 
