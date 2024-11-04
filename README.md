@@ -469,8 +469,20 @@ function emergencyWithdraw(address token) external {
 ```
 
 
+### 5. Gas Optimization - Storage vs Memory
 
-
+// Expensive ❌
+```solidity
+function getChannelInfo(address _channel) external view returns (Channel memory) {
+    return channels[_channel];
+}
+```
+// Cheaper ✅
+```solidity
+function getChannelState(address _channel) external view returns (uint8) {
+    return channels[_channel].channelState;
+}
+```
 
 ### Conclusion
 The **PushCoreV2** smart contract plays a critical role in the EPNS protocol, enabling users to subscribe to notifications and allowing the owner to send those notifications. The design utilizes OpenZeppelin’s libraries for security and efficiency, managing subscribers and notification statuses effectively.
