@@ -6,21 +6,17 @@
 The PUSH Protocol smart contract system (PushCoreV2) is a notification and channel management system built on Ethereum. This audit report covers the core functionality, including channel management, staking mechanisms, and reward distribution systems.
 
 
+|--------------|------------|
+
+
 | Project Name | PUSH Protocol | <br /> 
-| Contract Name | PushCoreV2 |
-| Solidity Version | ^0.6.0 |
-| Is Upgradeable? | Yes ✅ |
-| Main Features | Channel Management, Staking, Rewards |
-| Audit Date | 3rd Nov., 2024  |
-| Auditor | Uloka Ngozi Gift  |
-                         
-|-------------------------|-----------------------------------------------|
-| `Project Name`         | PUSH Protocol.    |
-| `Contract Name`        | PushCoreV2        |
-| `Platform`             | Ethereum.         |
-| `Language`             | Solidity ^0.6.0   |
-| `Audit Date`           | 3rd Nov., 2024    |
-| `Auditor`              | Uloka Ngozi Gift  |
+| Contract Name | PushCoreV2 | <br /> 
+| Solidity Version | ^0.6.0 | <br /> 
+| Is Upgradeable? | Yes ✅ | <br /> 
+| Main Features | Channel Management, Staking, Rewards | <br /> 
+| Audit Date | 3rd Nov., 2024  | <br /> 
+| Auditor | Uloka Ngozi Gift  | <br /> 
+
 
 
 ## 📋 Table of Contents
@@ -37,24 +33,58 @@ The PUSH Protocol smart contract system (PushCoreV2) is a notification and chann
 ### Introduction
 The EPNS Push Notification Protocol is a decentralized protocol enabling push notifications in the Ethereum ecosystem. It serves as a core part of the EPNS protocol, which allows decentralized applications (dApps) to send notifications to users in a secure and efficient manner.
 
-This review aims to assess the protocol’s smart contract for functional soundness and security best practices.
-
 ### Scope
 This review covers:
 - Code architecture and logic
 - Core functionalities
-- System Architecture
 - Security measures and potential vulnerabilities
 
+ --- 
+
+## What Does This Contract Do?
+
 ### Contract Overview
+
 The EPNS Push Notification Protocol contract encompasses the following primary functionalities:
 1. **Subscription Management**: Allows users to subscribe and unsubscribe from notifications.
 2. **Notification Sending**: Sends notifications to subscribed users.
 3. **Administration**: Manages permissions for administrators.
 
----
+Think of this contract as a YouTube-like platform where:
+
+1. Users can create channels (like YouTube channels)
+2. Users can stake tokens (like subscribing but with money)
+3. Channel owners get rewards (like YouTube monetization)
 
 
+### Main Components:
+
+#### 1. Channels 📺
+```solidity
+struct Channel {
+    ChannelType channelType;
+    uint8 channelState;      // 0: Inactive, 1: Active, 2: Deactivated, 3: Blocked
+    address verifiedBy;      // Who verified this channel
+    uint256 poolContribution;// How much they deposited
+    // ... other details
+}
+```
+
+#### 2. Staking System 💰
+```solidity
+struct UserFessInfo {    // Note: There's a typo in 'Fees'
+    uint256 stakedAmount;
+    uint256 stakedWeight;
+    uint256 lastStakedBlock;
+    uint256 lastClaimedBlock;
+    // ... other details
+}
+```
+
+#### 3. Rewards Distribution 🎁
+- Users stake PUSH tokens
+- Rewards are calculated based on epochs (time periods)
+- Each epoch is about 20 days long
 
 ### Detailed Analysis
 
@@ -145,7 +175,8 @@ contract PushCoreV2 is Initializable, Ownable, IPushCore {
 | Notification Tracking     | Efficient but could incur high gas costs with many notifications. |
 
 
-#### 3. Functions
+
+## 🔍 Important Functions
 
 **Example Function: Subscribe to Notifications**
 ```solidity
@@ -187,6 +218,8 @@ function sendNotification(address recipient, string memory message) external onl
 - **Owner Control**: This function is restricted to the owner. If the owner’s private key is compromised, an attacker could send false notifications. Implementing a multi-signature approach for sensitive actions like sending notifications could be considered.
 - **Gas Costs**: Each notification increments the notification count, which is efficient, but we can ensure that this doesn’t lead to excessive gas costs if the function is called frequently.
 - **Input Validation**: There should be validation for the `recipient` address to ensure it is not the zero address. This could prevent sending notifications to invalid recipients.
+
+
 
 
 #### 4. Events
