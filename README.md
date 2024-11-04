@@ -1,22 +1,9 @@
 
-# 🔍 Smart Contract Security Review: PUSH Protocol
+# 🔍 Smart Contract Review: PUSH Protocol
 
 
 ## Project Overview
 The PUSH Protocol smart contract system (PushCoreV2) is a notification and channel management system built on Ethereum. This audit report covers the core functionality, including channel management, staking mechanisms, and reward distribution systems.
-
-
-|--------------|------------|
-
-
-| Project Name | PUSH Protocol | <br /> 
-| Contract Name | PushCoreV2 | <br /> 
-| Solidity Version | ^0.6.0 | <br /> 
-| Is Upgradeable? | Yes ✅ | <br /> 
-| Main Features | Channel Management, Staking, Rewards | <br /> 
-| Audit Date | 3rd Nov., 2024  | <br /> 
-| Auditor | Uloka Ngozi Gift  | <br /> 
-
 
 
 ## 📋 Table of Contents
@@ -40,7 +27,7 @@ This review covers:
 - Core functionalities
 - Security measures and potential vulnerabilities
 
----
+
 
 ## What Does This Contract Do?
 
@@ -115,9 +102,8 @@ This contract applies several security practices:
 - **Access Control Checks**: Ensures only permitted addresses can execute administrative functions.
 - **Reentrancy Guards**: Prevents potential reentrancy attacks in notification or subscription processes.
 - **Input Validation**: Ensures user inputs are validated before state changes.
-  
 
----
+  
 
 ## Key Components
 
@@ -217,15 +203,6 @@ function stake(uint256 _amount) external {
 }
 ```
 
-
-**Example Function: Subscribe to Notifications**
-```solidity
-function subscribe() external {
-    require(!_subscribers.contains(msg.sender), "Already subscribed");
-    _subscribers.add(msg.sender);
-}
-```
-
 **What it does:**
 
 - Lets users deposit PUSH tokens
@@ -254,6 +231,8 @@ function harvestAll() public {
 - Calculates user's rewards
 - Sends rewards to user
 - Updates claim history
+
+  
 
 ### 4. Subscribe to Notifications
 ```solidity
@@ -299,19 +278,24 @@ function sendNotification(address recipient, string memory message) external onl
 - There should be validation for the `recipient` address to ensure it is not the zero address. This could prevent sending notifications to invalid recipients.
 
 
----
+### 6. Events
+```solidity
+event NotificationSent(address indexed recipient, string message, uint256 notificationId);
+```
+**What it does:**
+- **Purpose**: This event is emitted whenever a notification is sent.
+- **Indexed Parameter**: The `recipient` is indexed, which allows easy filtering of events in logs based on the recipient’s address.
+
+| Event Name               | Description                                    |
+|--------------------------|------------------------------------------------|
+| `NotificationSent`       | Logs details of the notification sent.        |
+
+
+
 
 ## 🚨 Security Checklist 
 
 ### 1. Access Control Issues
-
-| Function           | Who Can Call    | Risk Level      |
-|--------------------------|--------------|--------------|
-| `createChannelWithPUSH `       | `Anyone`   | `Low`     |
-| `stake `       | `Anyone`   | `Low`     |
-| `blockChannel `       | `Only Admin`   | `High`     |
-| `pauseContract `       | `Only Admin `   | `High`     |
-
 
 
 | Function | Who Can Call | Risk Level |
@@ -320,6 +304,7 @@ function sendNotification(address recipient, string memory message) external onl
 | stake | Anyone | Low |
 | blockChannel | Only Admin | High |
 | pauseContract | Only Admin | High |
+
 
 ### 2. Money Flow Checks
 
@@ -331,29 +316,161 @@ graph LR
 ```
 
 
-**Key Questions to Ask:**
+**Key Questions:**
 
 - Where does money come in?
-- 
 - Where does money go out?
-- 
 - Who controls the money flow?
   
 
 
+## 🔎 Common Issues Found
 
+### 1. Token Handling Problems
 
-#### 4. Events
 ```solidity
-event NotificationSent(address indexed recipient, string message, uint256 notificationId);
+// Problematic Pattern Found
+IERC20(PUSH_TOKEN_ADDRESS).safeTransfer(msg.sender, rewards);
+// Should check return value or use safeTransfer consistently
 ```
-**Review**:
-- **Purpose**: This event is emitted whenever a notification is sent.
-- **Indexed Parameter**: The `recipient` is indexed, which allows easy filtering of events in logs based on the recipient’s address.
 
-| Event Name               | Description                                    |
-|--------------------------|------------------------------------------------|
-| `NotificationSent`       | Logs details of the notification sent.        |
+| Issue Type | Risk Level | Description |
+|------------|------------|-------------|
+| Token Transfer | Medium | Some transfers don't check return values |
+| Token Approval | High | Missing approval checks in staking |
+| Token Balance | Medium | No balance validations before transfers |
+
+
+**What I Looked Out For:**
+
+- ✅ State updates before transfers
+- ✅ Proper event emissions
+- ❌ Missing state validations
+- ❌ Incorrect state update order
+
+- 
+### 3. Input Validation Gaps
+
+```solidity
+function stake(uint256 _amount) external {
+    // Missing basic validations
+    // Should check:
+    // - if _amount > 0
+    // - if contract is not paused
+    // - if user has enough balance
+    _stake(msg.sender, _amount);
+}
+```
+
+**Common Missing Checks:**
+
+- Zero amount validation
+- Address validation
+- Maximum limits
+- Minimum limits
+
+
+### 3. State Updates 📝
+```solidity
+// Problem: Wrong order of operations
+function updateChannel(...) {
+    // WRONG ORDER:
+    transferTokens();
+    updateState();
+    emitEvent();
+
+    // CORRECT ORDER:
+    // 1. Check conditions
+    // 2. Update state
+    // 3. Transfer tokens
+    // 4. Emit event
+}
+```
+
+
+
+## 🛠 Recommendations for Fixes
+
+### 1. Basic Security Improvements
+
+```solidity
+// Before
+function stake(uint256 _amount) external {
+    _stake(msg.sender, _amount);
+}
+
+// After
+function stake(uint256 _amount) external whenNotPaused {
+    require(_amount > 0, "Amount must be greater than 0");
+    require(_amount <= maxStakeLimit, "Amount exceeds max stake limit");
+    
+    // Check user balance first
+    require(IERC20(PUSH_TOKEN_ADDRESS).balanceOf(msg.sender) >= _amount, 
+        "Insufficient balance");
+    
+    _stake(msg.sender, _amount);
+}
+```
+
+
+### 2. Better Event Logging
+```solidity
+// Before
+emit Staked(msg.sender, _amount);
+
+// After - More detailed events
+event StakeUpdated(
+    address indexed user,
+    uint256 amount,
+    uint256 timestamp,
+    uint256 newTotalStake
+);
+
+emit StakeUpdated(
+    msg.sender,
+    _amount,
+    block.timestamp,
+    totalStakedAmount
+);
+```
+
+
+### 3. Pause Mechanism
+```solidity
+// Current implementation
+function pauseContract() external {
+    onlyGovernance();
+    _pause();
+}
+
+// Recommended improvement
+function pauseContract() external {
+    onlyGovernance();
+    require(!paused(), "Already paused");
+    emit PauseStatusChanged(true, msg.sender, block.timestamp);
+    _pause();
+}
+```
+
+
+### 4. Emergency Withdrawal Function (Missing)
+```solidity
+// Recommended to add:
+function emergencyWithdraw(address token) external {
+    require(paused(), "Contract must be paused");
+    onlyGovernance();
+    
+    uint256 balance = IERC20(token).balanceOf(address(this));
+    require(balance > 0, "No tokens to withdraw");
+    
+    IERC20(token).safeTransfer(governance, balance);
+    emit EmergencyWithdraw(token, balance, block.timestamp);
+}
+```
+
+
+
+
 
 ### Conclusion
 The **PushCoreV2** smart contract plays a critical role in the EPNS protocol, enabling users to subscribe to notifications and allowing the owner to send those notifications. The design utilizes OpenZeppelin’s libraries for security and efficiency, managing subscribers and notification statuses effectively.
