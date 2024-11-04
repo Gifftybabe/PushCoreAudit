@@ -39,7 +39,7 @@ This review covers:
 - Core functionalities
 - Security measures and potential vulnerabilities
 
- --- 
+
 
 ## What Does This Contract Do?
 
@@ -113,6 +113,7 @@ This contract applies several security practices:
 - **Reentrancy Guards**: Prevents potential reentrancy attacks in notification or subscription processes.
 - **Input Validation**: Ensures user inputs are validated before state changes.
 
+---
 
 ### Key Components
 
@@ -175,8 +176,43 @@ contract PushCoreV2 is Initializable, Ownable, IPushCore {
 | Notification Tracking     | Efficient but could incur high gas costs with many notifications. |
 
 
+---
 
 ## 🔍 Important Functions
+
+
+### 1. Channel Creation
+```solidity
+function createChannelWithPUSH(
+    ChannelType _channelType,
+    bytes calldata _identity,
+    uint256 _amount,
+    uint256 _channelExpiryTime
+) external whenNotPaused
+```
+
+**What it does:**
+
+- Creates a new channel
+- Takes PUSH tokens from user
+- Sets up channel settings
+
+**Security Checks:**
+  
+- ✅ Checks if enough tokens deposited
+- ✅ Verifies channel doesn't already exist
+- ❌ Missing zero-address check
+- ❌ No validation for _identity parameter
+
+  
+### 2. Staking Function
+```solidity
+function stake(uint256 _amount) external {
+    _stake(msg.sender, _amount);
+    emit Staked(msg.sender, _amount);
+}
+```
+
 
 **Example Function: Subscribe to Notifications**
 ```solidity
@@ -185,17 +221,56 @@ function subscribe() external {
     _subscribers.add(msg.sender);
 }
 ```
-**Review**:
-- **Function Purpose**: Allows users to subscribe to notifications.
-- **Require Statement**: Checks that the caller isn’t already subscribed to prevent duplicates.
-- **Adding Subscriber**: If not already subscribed, adds the caller’s address to the `_subscribers` set.
 
-##### Vulnerabilities & Improvements
-- **Reentrancy Risk**: This function does not involve any external calls or state changes that could trigger reentrancy, which is positive.
-- **Error Handling**: The error message could be more informative. Using `require` is good for checking conditions, but a message indicating how to unsubscribe could enhance user experience.
+**What it does:**
+
+- Lets users deposit PUSH tokens
+- Calculates their staking weight
+- Updates reward tracking
+
+**Common Issues:**
+  
+- No maximum stake limit
+- No cooldown period
+- Rewards can be manipulated with large stakes
+
+
+
+### 3. Reward Claims
+```solidity
+function harvestAll() public {
+    uint256 currentEpoch = lastEpochRelative(genesisEpoch, block.number);
+    uint256 rewards = harvest(msg.sender, currentEpoch - 1);
+    IERC20(PUSH_TOKEN_ADDRESS).safeTransfer(msg.sender, rewards);
+}
+```
+
+**What it does:**
+
+- Calculates user's rewards
+- Sends rewards to user
+- Updates claim history
+
+### 4. Subscribe to Notifications
+```solidity
+function subscribe() external {
+    require(!_subscribers.contains(msg.sender), "Already subscribed");
+    _subscribers.add(msg.sender);
+}
+
+```
+**What it does:**
+
+- Allows users to subscribe to notifications.
+- Checks that the caller isn’t already subscribed to prevent duplicates.
+- If not already subscribed, adds the caller’s address to the `_subscribers` set.
+
+**Common Issues:**
+- This function does not involve any external calls or state changes that could trigger reentrancy, which is positive.
+- The error message could be more informative. Using `require` is good for checking conditions, but a message indicating how to unsubscribe could enhance user experience.
 
   
-**Example Function: Send Notification**
+## 5. Send Notification
 ```solidity
 function sendNotification(address recipient, string memory message) external onlyOwner {
     // Implementation of sending notification
@@ -203,21 +278,44 @@ function sendNotification(address recipient, string memory message) external onl
     _notificationCount.increment();
 }
 ```
-**Review**:
-- **Function Purpose**: Sends a notification to a specified recipient.
-- **Visibility**: This function can only be called by the owner of the contract.
-- **Event Emission**: Emits a `NotificationSent` event after successfully sending the notification.
-- **Notification Count**: Increments the notification count after sending.
+**What it does:**
+- Sends a notification to a specified recipient.
+- This function can only be called by the owner of the contract.
+- Emits a `NotificationSent` event after successfully sending the notification.
+- Increments the notification count after sending.
 
 | Function Name            | Visibility   | Modifier     | Description                              |
 |--------------------------|--------------|--------------|------------------------------------------|
 | `sendNotification`       | `external`   | `onlyOwner`  | Sends a notification to a recipient.    |
 
 
-##### Vulnerabilities & Improvements
-- **Owner Control**: This function is restricted to the owner. If the owner’s private key is compromised, an attacker could send false notifications. Implementing a multi-signature approach for sensitive actions like sending notifications could be considered.
-- **Gas Costs**: Each notification increments the notification count, which is efficient, but we can ensure that this doesn’t lead to excessive gas costs if the function is called frequently.
-- **Input Validation**: There should be validation for the `recipient` address to ensure it is not the zero address. This could prevent sending notifications to invalid recipients.
+**Common Issues:**
+- This function is restricted to the owner. If the owner’s private key is compromised, an attacker could send false notifications. Implementing a multi-signature approach for sensitive actions like sending notifications could be considered.
+- Each notification increments the notification count, which is efficient, but we can ensure that this doesn’t lead to excessive gas costs if the function is called frequently.
+- There should be validation for the `recipient` address to ensure it is not the zero address. This could prevent sending notifications to invalid recipients.
+
+
+
+
+
+### 2. Money Flow Checks
+
+```mermaid
+graph LR
+    A[User] -->|Stake| B[Contract]
+    B -->|Rewards| A
+    C[Channel Creator] -->|Deposit| B
+```
+
+
+**Key Questions to Ask:**
+
+- Where does money come in?
+- 
+- Where does money go out?
+- 
+- Who controls the money flow?
+  
 
 
 
