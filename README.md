@@ -1,21 +1,39 @@
-# EPNS Push Notification Protocol Smart Contract Review
 
-## Overview
-This document presents a thorough review of the EPNS (Ethereum Push Notification Service) Push Notification Protocol smart contract, focusing on its architecture, functionality, and security.
+# 🔍 Smart Contract Security Review: PUSH Protocol
 
-## Contents
-- [Introduction](#introduction)
-- [Scope](#scope)
-- [Contract Overview](#contract-overview)
-- [Detailed Analysis](#detailed-analysis)
-  - [Architecture](#architecture)
-  - [Core Functionalities](#core-functionalities)
-  - [Security Considerations](#security-considerations)
-- [Key_Components](#strengths)
-- [Potential Risks](#potential-risks)
-- [Conclusion](#conclusion)
 
----
+## Project Overview
+The PUSH Protocol smart contract system (PushCoreV2) is a notification and channel management system built on Ethereum. This audit report covers the core functionality, including channel management, staking mechanisms, and reward distribution systems.
+
+|--------------|------------|
+
+| Project Name | PUSH Protocol |
+| Contract Name | PushCoreV2 |
+| Solidity Version | ^0.6.0 |
+| Is Upgradeable? | Yes ✅ |
+| Main Features | Channel Management, Staking, Rewards |
+| Audit Date | 3rd Nov., 2024  |
+| Auditor | Uloka Ngozi Gift  |
+                         
+|-------------------------|-----------------------------------------------|
+| `Project Name`         | PUSH Protocol.    |
+| `Contract Name`        | PushCoreV2        |
+| `Platform`             | Ethereum.         |
+| `Language`             | Solidity ^0.6.0   |
+| `Audit Date`           | 3rd Nov., 2024    |
+| `Auditor`              | Uloka Ngozi Gift  |
+
+
+## 📋 Table of Contents
+1. [Basic Contract Information](#basic-contract-information)
+2. [What Does This Contract Do?](#what-does-this-contract-do)
+3. [Important Functions](#important-functions)
+4. [Security Checklist](#security-checklist)
+5. [Common Issues Found](#common-issues-found)
+6. [Recommendations](#recommendations)
+
+
+## Basic Contract Information
 
 ### Introduction
 The EPNS Push Notification Protocol is a decentralized protocol enabling push notifications in the Ethereum ecosystem. It serves as a core part of the EPNS protocol, which allows decentralized applications (dApps) to send notifications to users in a secure and efficient manner.
@@ -26,6 +44,7 @@ This review aims to assess the protocol’s smart contract for functional soundn
 This review covers:
 - Code architecture and logic
 - Core functionalities
+- System Architecture
 - Security measures and potential vulnerabilities
 
 ### Contract Overview
@@ -35,6 +54,8 @@ The EPNS Push Notification Protocol contract encompasses the following primary f
 3. **Administration**: Manages permissions for administrators.
 
 ---
+
+
 
 ### Detailed Analysis
 
