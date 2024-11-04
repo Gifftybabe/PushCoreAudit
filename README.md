@@ -5,12 +5,8 @@
 ## Project Overview
 The PUSH Protocol smart contract system (PushCoreV2) is a notification and channel management system built on Ethereum. This audit report covers the core functionality, including channel management, staking mechanisms, and reward distribution systems.
 
-|--------------|------------|
 
-
-|--------------|------------|
-
-| Project Name | PUSH Protocol |
+| Project Name | PUSH Protocol | <br /> 
 | Contract Name | PushCoreV2 |
 | Solidity Version | ^0.6.0 |
 | Is Upgradeable? | Yes ✅ |
