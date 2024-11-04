@@ -11,7 +11,7 @@ This document presents a thorough review of the EPNS (Ethereum Push Notification
   - [Architecture](#architecture)
   - [Core Functionalities](#core-functionalities)
   - [Security Considerations](#security-considerations)
-- [Strengths](#strengths)
+- [Key_Components](#strengths)
 - [Potential Risks](#potential-risks)
 - [Conclusion](#conclusion)
 
