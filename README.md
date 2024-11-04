@@ -18,7 +18,9 @@ This document presents a thorough review of the EPNS (Ethereum Push Notification
 ---
 
 ### Introduction
-The EPNS Push Notification Protocol is a decentralized protocol enabling push notifications in the Ethereum ecosystem. This review aims to assess the protocol’s smart contract for functional soundness and security best practices.
+The EPNS Push Notification Protocol is a decentralized protocol enabling push notifications in the Ethereum ecosystem. It serves as a core part of the EPNS protocol, which allows decentralized applications (dApps) to send notifications to users in a secure and efficient manner.
+
+This review aims to assess the protocol’s smart contract for functional soundness and security best practices.
 
 ### Scope
 This review covers:
@@ -61,12 +63,6 @@ This contract applies several security practices:
 - **Reentrancy Guards**: Prevents potential reentrancy attacks in notification or subscription processes.
 - **Input Validation**: Ensures user inputs are validated before state changes.
 
-Thank you for your patience, and I appreciate your clarification. Let’s focus on the **PushCoreV2** smart contract specifically related to the Ethereum Push Notification Service (EPNS) and provide a comprehensive review of the code snippets you provided.
-
-## PushCoreV2 Smart Contract Review
-
-### Overview
-The **PushCoreV2** contract is designed to facilitate notifications on the Ethereum blockchain. It serves as a core part of the EPNS protocol, which allows decentralized applications (dApps) to send notifications to users in a secure and efficient manner.
 
 ### Key Components
 
@@ -119,12 +115,15 @@ contract PushCoreV2 is Initializable, Ownable, IPushCore {
   - **`_notificationCount`**: Keeps track of the total number of notifications sent.
   - **`_subscribers`**: Manages a set of addresses that have subscribed to notifications.
   - **`_notificationStatus`**: A nested mapping that tracks whether a particular address has received a specific notification.
+  - The use of a nested mapping to track notification statuses is efficient. However, it could potentially lead to high gas costs if there are numerous notifications per subscriber.
 
-| Variable Name            | Type                             | Description                                   |
-|--------------------------|----------------------------------|-----------------------------------------------|
-| `_notificationCount`     | `Counters.Counter`               | Counts the total notifications sent.          |
-| `_subscribers`           | `EnumerableSet.AddressSet`       | Stores addresses subscribed to notifications. |
-| `_notificationStatus`     | `mapping(address => mapping(bytes32 => bool))` | Tracks if an address has received a notification. |
+
+| Component                | Description & Risks                                           |
+|--------------------------|-------------------------------------------------------------|
+| Initialization           | Ensure initialization function is called to avoid issues.   |
+| Access Control           | `Ownable` provides basic control; consider more roles.      |
+| Notification Tracking     | Efficient but could incur high gas costs with many notifications. |
+
 
 #### 3. Functions
 
@@ -140,10 +139,11 @@ function subscribe() external {
 - **Require Statement**: Checks that the caller isn’t already subscribed to prevent duplicates.
 - **Adding Subscriber**: If not already subscribed, adds the caller’s address to the `_subscribers` set.
 
-| Function Name            | Visibility   | Description                               |
-|--------------------------|--------------|-------------------------------------------|
-| `subscribe`              | `external`   | Subscribes the caller to notifications.   |
+##### Vulnerabilities & Improvements
+- **Reentrancy Risk**: This function does not involve any external calls or state changes that could trigger reentrancy, which is positive.
+- **Error Handling**: The error message could be more informative. Using `require` is good for checking conditions, but a message indicating how to unsubscribe could enhance user experience.
 
+  
 **Example Function: Send Notification**
 ```solidity
 function sendNotification(address recipient, string memory message) external onlyOwner {
@@ -161,6 +161,13 @@ function sendNotification(address recipient, string memory message) external onl
 | Function Name            | Visibility   | Modifier     | Description                              |
 |--------------------------|--------------|--------------|------------------------------------------|
 | `sendNotification`       | `external`   | `onlyOwner`  | Sends a notification to a recipient.    |
+
+
+##### Vulnerabilities & Improvements
+- **Owner Control**: This function is restricted to the owner. If the owner’s private key is compromised, an attacker could send false notifications. Implementing a multi-signature approach for sensitive actions like sending notifications could be considered.
+- **Gas Costs**: Each notification increments the notification count, which is efficient, but we can ensure that this doesn’t lead to excessive gas costs if the function is called frequently.
+- **Input Validation**: There should be validation for the `recipient` address to ensure it is not the zero address. This could prevent sending notifications to invalid recipients.
+
 
 #### 4. Events
 ```solidity
@@ -182,6 +189,4 @@ This review has covered the main components of the **PushCoreV2** contract in a 
 
 ### Conclusion
 The EPNS Push Notification Protocol smart contract exhibits a well-organized structure and strong security practices, particularly in access control. Minor improvements in gas optimization and input validation could further strengthen its efficiency and reliability.
-
----
 
