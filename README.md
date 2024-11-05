@@ -504,7 +504,7 @@ This security review of the PushCoreV2 smart contract system has identified vari
 
 ### Reviewer Information
 
-Reviewer: Uloka Ngozi Gift
+Reviewer: Uloka Ngozi Gift <br />
 Position: Smart Contract Security Researcher
 Contact: 
  - [LinkedIn](https://www.linkedin.com/in/gifftybabe/)  
@@ -513,11 +513,11 @@ Contact:
 
 ### Project Information
 
-Project: PUSH Protocol
-Contract: PushCoreV2
-Platform: Ethereum
-Language: Solidity
-Review Date: 5 Nov 2024
+Project: PUSH Protocol <br />
+Contract: PushCoreV2 <br />
+Platform: Ethereum <br />
+Language: Solidity <br />
+Review Date: 5 Nov 2024 <br />
 
 
 
