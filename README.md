@@ -484,12 +484,52 @@ function getChannelState(address _channel) external view returns (uint8) {
 }
 ```
 
-### Conclusion
-The **PushCoreV2** smart contract plays a critical role in the EPNS protocol, enabling users to subscribe to notifications and allowing the owner to send those notifications. The design utilizes OpenZeppelin’s libraries for security and efficiency, managing subscribers and notification statuses effectively.
+# 🔍 Smart Contract Security Review: PUSH Protocol 
+## Conclusion
 
-### Final Thoughts
-This review has covered the main components of the **PushCoreV2** contract in a clear and straightforward manner. Each part of the contract, from imports to functions, has been discussed to provide a comprehensive understanding of its functionality. If you have specific areas that you want to dive deeper into or any additional components to review, feel free to ask!
+This security review of the PushCoreV2 smart contract system has identified various areas of concern and provided recommendations for improvements. The contract demonstrates good foundational security practices but requires several enhancements to achieve optimal security and efficiency.
 
-### Conclusion
-The EPNS Push Notification Protocol smart contract exhibits a well-organized structure and strong security practices, particularly in access control. Minor improvements in gas optimization and input validation could further strengthen its efficiency and reliability.
+### Key Findings Summary:
+- ✅ Solid access control implementation
+- ⚠️ Some potential reentrancy risks
+- ⚠️ Storage layout concerns for upgrades
+- 🔄 Reward calculation precision issues
+- 🛡️ Need for additional emergency controls
+### Recommendations Priority:
+1. 🚨 High: Implement reentrancy guards
+2. 🚨 High: Add storage gaps
+3. ⚠️ Medium: Enhance event emissions
+4. ⚠️ Medium: Improve input validation
+5. ℹ️ Low: Optimize gas usage
+## Review Metadata
+### Reviewer Information
+```yaml
+Reviewer: [Uloka Ngozi Giffty]
+Position: Smart Contract Security Researcher
+Contact: 
+  - Email: [ulokangozi@gmail.com]
+  - Twitter: [@Gifftybabe]
+  - GitHub: [Gifftybabe]
+  - Linkedln: [@Gifftybabe]
+```
 
+### Project Information
+```yaml
+Project: PUSH Protocol
+Contract: PushCoreV2
+Platform: Ethereum
+Language: Solidity
+Review Date: [5 Nov 2024]
+```
+
+### Review Tags
+```yaml
+#SmartContractSecurity
+#BlockchainSecurity
+#SolidityAudit
+#PushProtocol
+#DeFiSecurity
+#Web3Security
+#SmartContractAudit
+#SecurityResearch
+```
