@@ -484,7 +484,7 @@ function getChannelState(address _channel) external view returns (uint8) {
 }
 ```
 
-# 🔍 Smart Contract Security Review: PUSH Protocol 
+
 ## Conclusion
 
 This security review of the PushCoreV2 smart contract system has identified various areas of concern and provided recommendations for improvements. The contract demonstrates good foundational security practices but requires several enhancements to achieve optimal security and efficiency.
@@ -501,35 +501,23 @@ This security review of the PushCoreV2 smart contract system has identified vari
 3. ⚠️ Medium: Enhance event emissions
 4. ⚠️ Medium: Improve input validation
 5. ℹ️ Low: Optimize gas usage
-## Review Metadata
+
 ### Reviewer Information
-```yaml
-Reviewer: [Uloka Ngozi Giffty]
+
+Reviewer: Uloka Ngozi Gift
 Position: Smart Contract Security Researcher
 Contact: 
-  - Email: [ulokangozi@gmail.com]
-  - Twitter: [@Gifftybabe]
-  - GitHub: [Gifftybabe]
-  - Linkedln: [@Gifftybabe]
-```
+ - [LinkedIn](https://www.linkedin.com/in/gifftybabe/)  
+ - [Twitter](https://x.com/Gifftybabe)  
+
 
 ### Project Information
-```yaml
+
 Project: PUSH Protocol
 Contract: PushCoreV2
 Platform: Ethereum
 Language: Solidity
-Review Date: [5 Nov 2024]
-```
+Review Date: 5 Nov 2024
 
-### Review Tags
-```yaml
-#SmartContractSecurity
-#BlockchainSecurity
-#SolidityAudit
-#PushProtocol
-#DeFiSecurity
-#Web3Security
-#SmartContractAudit
-#SecurityResearch
-```
+
+
