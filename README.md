@@ -505,8 +505,8 @@ This security review of the PushCoreV2 smart contract system has identified vari
 ### Reviewer Information
 
 Reviewer: Uloka Ngozi Gift <br />
-Position: Smart Contract Security Researcher
-Contact: 
+Position: Smart Contract Security Researcher <br />
+Contact: <br />
  - [LinkedIn](https://www.linkedin.com/in/gifftybabe/)  
  - [Twitter](https://x.com/Gifftybabe)  
 
